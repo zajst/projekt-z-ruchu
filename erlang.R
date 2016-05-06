@@ -1,17 +1,19 @@
  rm(list = ls())
 library(Rmpfr)
 # N  <- mpfr(2000, 8192)   # liczba o precyzji 1MB to 8388608 i 1kB to 8192
-Erlang  <- mpfr(1, 2048)
+Erlang  <- mpfr(1, 1024)
 one <- mpfr(1, 2048)
-N=100
+N=800
+# ilo≈õƒá u≈ºytkownik√≥w
+S=5000
 
-# úredni czas rozmowy 
+# ≈õredni czas rozmowy 
 srt = 180
 
-# iloúÊ chwil - dla doby to 86400
+# ilo≈õƒá chwil - dla doby to 86400
 t=86400
 
-# zadeklarowanie wektorÛw X, Y
+# zadeklarowanie wektor√≥w X, Y
 x = 0:(t-1)
 y=x*0
 x1 = x/3600
@@ -19,12 +21,12 @@ x1 = x/3600
 
 #########################################################################
 
-# lambda - w kolejnej wersji bÍdzie to funkcja
+# lambda - w kolejnej wersji bƒôdzie to funkcja
 
 
-# wpisywanie lambdy w kaødej godzinie z palca
+# wpisywanie lambdy w ka≈ºdej godzinie z palca
 
- h=c(1,1,1,1,1,1,1,1,1,1,1,3,6,4,2,1,1,1,1,1,1,1,1,1)
+ h=c(0.6,0.3,0.2,0.1,0.6,1,1.2,1.9,2.5,3,3.3,3.5,3.9,4.2,4,3.7,3.5,3.2,2.9,2.5,2.1,1.9,1.4,1.1,0.8)
  lam <- c(1:3600*0+h[1], 1:3600*0+h[2],1:3600*0+h[3],1:3600*0+h[4],1:3600*0+h[5],1:3600*0+h[6],
  1:3600*0+h[7], 1:3600*0+h[8],1:3600*0+h[9],1:3600*0+h[10],1:3600*0+h[11],1:3600*0+h[12],
  1:3600*0+h[13], 1:3600*0+h[14],1:3600*0+h[15],1:3600*0+h[16],1:3600*0+h[17],1:3600*0+h[18],
@@ -42,16 +44,16 @@ x1 = x/3600
 #tab=matrix(0,5,5)
 
 
-#przejúcie po wszystkich X
+#przej≈õcie po wszystkich X
 for ( i in x) {
-	p = rpois(1,lam[i+1])  #losowanie iloúci po≥πczeÒ w danej chwili
+	p = rpois(1,lam[i+1])  #losowanie ilo≈õci po≈ÇƒÖcze≈Ñ w danej chwili
 
-	# przejúcie po iloúci po≥πczeÒ
+	# przej≈õcie po ilo≈õci po≈ÇƒÖcze≈Ñ
 	if (p>0) {
 		for (j in 0:(p-1)) {
-			e = round(srt*rexp(1)) #losowanie d≥ogoúci po≥πczenia
+			e = round(srt*rexp(1)) #losowanie d≈Çogo≈õci po≈ÇƒÖczenia
 
-			# dodawanie do kaødej chwili X iloúci po≥πczeÒ
+			# dodawanie do ka≈ºdej chwili X ilo≈õci po≈ÇƒÖcze≈Ñ
 			if (e>0) {
 				for ( k in 0:(e-1)) {
 					y[1+(i+k)%%t] = y[1+(i+k)%%t] + 1
@@ -74,37 +76,43 @@ for ( i in x) {
  plot(x1,y, type='h', ylim=c(0,2000))
 abline(N,0)
 
-setwd("D:/") #úcieøka zapisu
+# setwd("D:/") #≈õcie≈ºka zapisu
 
-png(file="obrazek.png" , width = 90000, height=2500)
-plot(x,y, type='h', ylim=c(0,2000))
-dev.off()
+# png(file="obrazek.png" , width = 90000, height=2500)
+# plot(x,y, type='h', ylim=c(0,2000))
+# dev.off()
 
 
 # blokada Erlanga
-E = ((one*max(y))^N/factorialMpfr(N, 1024)) / sum( (one*max(y))^(0:N) / factorialMpfr(0:N, 1024))
-EroundMpfr(E, 16)
-vec <- 1:100
-Erlang1=vec*0
-
 Erlang0  <- mpfr(1, 2048)		#trzeba zadeklatrowac obiekt Erlang0 w mpfr
-for (i in vec) {
-	Erlang0[i] <- roundMpfr( ((one*y[i])^N/factorialMpfr(N, 2048)) / sum( (one*y[i])^(0:N) / factorialMpfr(0:N, 2048)) , 10)
+for (i in x) {
+	Erlang0[i+1] <- ((one*y[i+1])^N/factorialMpfr(N, 2048)) / sum( (one*y[i+1])^(0:N) / factorialMpfr(0:N, 2048))
 }
+ye=round(Erlang0,5)
+plot(x,ye, type='h')
+# abline(1,0)
 
-ye=round(Erlang,5)
-plot(vec,Erlang0, type='h', ylim=c(0,1))
-abline(1,0)
 
 
 # Dla N<170
-for (i in x) {
-	Erlang[i+1]= ((y[1+i])^N/factorial(N)) / sum( (y[1+i])^(0:N) / factorial(0:N))
+# for (i in x) {
+#	Erlang[i+1]= ((y[1+i])^N/factorial(N)) / sum( (y[1+i])^(0:N) / factorial(0:N))
+#
+# }
 
+
+# AN = gamma(as(86400,"mpfr"))
+
+
+####################### Engset
+Engset0 <- mpfr(1, 2048)
+for (i in x) {
+	Engset0[i+1] <- ( chooseMpfr(S-1,N)*(one*y[i+1])^N ) / sum( chooseMpfr(S-1,0:N)*(one*y[i+1])^(0:N) )
 }
 
+yegset0=round(Engset0,5)
 
-AN = gamma(as(86400,"mpfr"))
+
 
 
 
